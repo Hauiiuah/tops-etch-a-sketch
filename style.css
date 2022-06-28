@@ -4,6 +4,18 @@
   box-sizing: border-box;
 }
 
+body {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 50px;
+}
+
+#controls {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
 .pixel {
   background-color: white;
   border: 1px solid black;
@@ -14,6 +26,7 @@
 }
 
 #paint-grid {
+  margin-top: 20%;
   width: 480px;
   height: 480px;
   border: 1px solid black;
@@ -22,4 +35,12 @@
 
 .black {
   background-color: black;
+}
+
+#controls button {
+  padding: 15px 45px;
+}
+
+.toggled {
+  background-color: lightblue;
 }
