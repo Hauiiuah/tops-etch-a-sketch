@@ -16,3 +16,10 @@ for (let j = 0; j < rowCount; j++) {
 
   paintGrid.appendChild(row)
 }
+
+const paint = (e) => {
+  e.target.classList.add('black')
+}
+
+const pixel = document.querySelectorAll('.pixel')
+pixel.forEach((pixel) => pixel.addEventListener('click', paint))

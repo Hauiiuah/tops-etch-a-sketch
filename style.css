@@ -5,8 +5,8 @@
 }
 
 .pixel {
-  border: 1px solid black;
   background-color: white;
+  border: 1px solid black;
 }
 
 .pixel:hover {
@@ -18,4 +18,8 @@
   height: 480px;
   border: 1px solid black;
   display: flex;
+}
+
+.black {
+  background-color: black;
 }
