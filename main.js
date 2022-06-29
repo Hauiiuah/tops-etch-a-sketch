@@ -11,6 +11,7 @@ const clearButton = document.getElementById('clearButton')
 let gridSize = 16
 let color = '#000000'
 let pixel
+let paintMode
 
 const initialize = () => {
   generateGrid(gridSize)
@@ -27,6 +28,7 @@ const generateGrid = (gridSize) => {
       pixel.classList.add('pixel')
       pixel.style.width = size
       pixel.style.height = size
+      pixel.style.backgroundColor = '#ffffff'
 
       row.appendChild(pixel)
     }
@@ -38,7 +40,8 @@ const generateGrid = (gridSize) => {
 }
 
 const addHandler = () => {
-  pixel.forEach((pixel) => pixel.addEventListener('click', paint))
+  paintMode = paint
+  pixel.forEach((pixel) => pixel.addEventListener('click', paintMode))
   clearButton.addEventListener('click', clearGrid)
 
   bwColorButton.addEventListener('click', () => {
@@ -61,7 +64,9 @@ const paint = (e) => {
   e.target.style.backgroundColor = color
 }
 
-const clearGrid = (e) => {}
+const clearGrid = () => {
+  pixel.forEach((pixel) => (pixel.style.backgroundColor = '#ffffff'))
+}
 
 const paintBW = (e) => {
   e.target.style.backgroundColor = '#000000'
@@ -72,21 +77,56 @@ const paintColor = (e) => {
 }
 
 const paintRandom = (e) => {
+  console.log('Paint Random')
   let R = Math.floor(Math.random() * 255)
   let G = Math.floor(Math.random() * 255)
   let B = Math.floor(Math.random() * 255)
-  e.target.style.backgroundColor = `RGB(${R},${G},${B})`
+
+  var RR = R.toString(16).length == 1 ? '0' + R.toString(16) : R.toString(16)
+  var GG = G.toString(16).length == 1 ? '0' + G.toString(16) : G.toString(16)
+  var BB = B.toString(16).length == 1 ? '0' + B.toString(16) : B.toString(16)
+
+  color = '#' + RR + GG + BB
+  e.target.style.backgroundColor = color
 }
 
-const setDarken = (e) => {}
+const paintDarken = (e) => {
+  let col = e.target.style.backgroundColor
+
+  let newCol = darken(col, -10)
+  console.log('COLOR: ', col, 'NewColor:', newCol)
+  e.target.style.backgroundColor = newCol
+}
 
 const untoggle = () => {
   const buttons = document.querySelectorAll('#controls button')
   buttons.forEach((button) => button.classList.remove('toggled'))
 }
 
+const darken = (color, percent) => {
+  let values = color.match(/\d\w+/g)
+
+  var R = parseInt(values[0])
+  var G = parseInt(values[1])
+  var B = parseInt(values[2])
+
+  R = parseInt((R * (100 + percent)) / 100)
+  G = parseInt((G * (100 + percent)) / 100)
+  B = parseInt((B * (100 + percent)) / 100)
+
+  R = R < 255 ? R : 255
+  G = G < 255 ? G : 255
+  B = B < 255 ? B : 255
+
+  var RR = R.toString(16).length == 1 ? '0' + R.toString(16) : R.toString(16)
+  var GG = G.toString(16).length == 1 ? '0' + G.toString(16) : G.toString(16)
+  var BB = B.toString(16).length == 1 ? '0' + B.toString(16) : B.toString(16)
+
+  return '#' + RR + GG + BB
+}
+
 const setMode = (mode) => {
-  let paintMode
+  pixel.forEach((pixel) => pixel.removeEventListener('click', paintMode))
   switch (mode) {
     case 'bw': {
       console.log('Set Mode to B/W')
@@ -105,9 +145,11 @@ const setMode = (mode) => {
     }
     case 'darken': {
       console.log('Set Mode to Darken')
+      paintMode = paintDarken
       break
     }
   }
+
   pixel.forEach((pixel) => pixel.addEventListener('click', paintMode))
 }
 
