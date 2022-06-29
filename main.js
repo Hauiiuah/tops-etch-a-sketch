@@ -3,9 +3,12 @@ const paintGrid = document.getElementById('paint-grid')
 // Controls
 const darkenButton = document.getElementById('darkenButton')
 const rndRgbColorButton = document.getElementById('rndRgbColorButton')
-const colorButton = document.getElementById('colorButton')
+
 const bwColorButton = document.getElementById('bwColorButton')
 const clearButton = document.getElementById('clearButton')
+
+const gridSizeLabel = document.getElementById('gridSizeLabel')
+const gridSizeSlider = document.getElementById('gridSize')
 
 const rSlider = document.getElementById('rSlider')
 const gSlider = document.getElementById('gSlider')
@@ -32,10 +35,9 @@ const changeSlider = () => {
 
   colorPreviewRGB.style.backgroundColor = `rgb(${rSlider.value},${gSlider.value},${bSlider.value})`
   colorPreviewHSL.style.backgroundColor = `hsl(${hsl.H},${hsl.S}%,${hsl.L}%)`
+
+  switchPaintMode(paint)
 }
-rSlider.addEventListener('change', changeSlider)
-gSlider.addEventListener('change', changeSlider)
-bSlider.addEventListener('change', changeSlider)
 
 // Global Options
 let gridSize = 16
@@ -44,11 +46,18 @@ let pixel
 let paintMode
 
 const initialize = () => {
-  generateGrid(gridSize)
+  changeGrid()
   addHandler()
+  changeSlider()
+}
+
+const changeGrid = () => {
+  generateGrid(gridSizeSlider.value)
+  gridSizeLabel.innerText = `Grid-Size: ${gridSizeSlider.value}`
 }
 
 const generateGrid = (gridSize) => {
+  paintGrid.innerHTML = ''
   const size = `${Math.round(paintGrid.offsetWidth / gridSize)}px`
 
   for (let j = 0; j < gridSize; j++) {
@@ -67,67 +76,72 @@ const generateGrid = (gridSize) => {
   }
 
   pixel = document.querySelectorAll('.pixel')
+  switchPaintMode(paint)
 }
 
 const addHandler = () => {
-  paintMode = paintBW
-  pixel.forEach((pixel) => pixel.addEventListener('click', paintMode))
   clearButton.addEventListener('click', clearGrid)
 
   bwColorButton.addEventListener('click', () => {
-    setMode('bw')
-  })
-
-  colorButton.addEventListener('click', () => {
-    setMode('color')
+    switchPaintMode(paint)
   })
 
   rndRgbColorButton.addEventListener('click', () => {
-    setMode('rnd')
+    switchPaintMode(paintRandom)
   })
 
   darkenButton.addEventListener('click', () => {
-    setMode('darken')
+    switchPaintMode(paintDarken)
   })
+
+  rSlider.addEventListener('change', changeSlider)
+  gSlider.addEventListener('change', changeSlider)
+  bSlider.addEventListener('change', changeSlider)
+
+  gridSizeSlider.addEventListener('change', changeGrid)
+}
+
+const setColor = (r, g, b) => {
+  rSlider.value = r
+  gSlider.value = g
+  bSlider.value = b
+  changeSlider()
 }
 
 const clearGrid = () => {
   pixel.forEach((pixel) => (pixel.style.backgroundColor = '#ffffff'))
+  setColor(0, 0, 0)
 }
 
-const paintBW = (e) => {
-  e.target.style.backgroundColor = '#000000'
-}
-
-const paintColor = (e) => {
-  e.target.style.backgroundColor = colorPreviewRGB.style.backgroundColor
+const paint = (e) => {
+  if (e.buttons === 1) {
+    e.target.style.backgroundColor = colorPreviewRGB.style.backgroundColor
+  }
 }
 
 const paintRandom = (e) => {
-  console.log('Paint Random')
-  let R = Math.floor(Math.random() * 255)
-  let G = Math.floor(Math.random() * 255)
-  let B = Math.floor(Math.random() * 255)
+  if (e.buttons === 1) {
+    let R = Math.floor(Math.random() * 255)
+    let G = Math.floor(Math.random() * 255)
+    let B = Math.floor(Math.random() * 255)
 
-  var RR = R.toString(16).length == 1 ? '0' + R.toString(16) : R.toString(16)
-  var GG = G.toString(16).length == 1 ? '0' + G.toString(16) : G.toString(16)
-  var BB = B.toString(16).length == 1 ? '0' + B.toString(16) : B.toString(16)
+    var RR = R.toString(16).length == 1 ? '0' + R.toString(16) : R.toString(16)
+    var GG = G.toString(16).length == 1 ? '0' + G.toString(16) : G.toString(16)
+    var BB = B.toString(16).length == 1 ? '0' + B.toString(16) : B.toString(16)
 
-  color = '#' + RR + GG + BB
-  e.target.style.backgroundColor = color
+    color = '#' + RR + GG + BB
+    e.target.style.backgroundColor = color
+  }
 }
 
 const paintDarken = (e) => {
-  let col = e.target.style.backgroundColor
+  if (e.buttons === 1) {
+    let col = e.target.style.backgroundColor
 
-  let newCol = darken(col, -10)
+    let newCol = darken(col, -10)
 
-  e.target.style.backgroundColor = newCol
-}
-
-const untoggle = () => {
-  const buttons = document.querySelectorAll('#controls button')
-  buttons.forEach((button) => button.classList.remove('toggled'))
+    e.target.style.backgroundColor = newCol
+  }
 }
 
 const rgb2hsl = (r, g, b) => {
@@ -157,23 +171,22 @@ const rgb2hsl = (r, g, b) => {
 
   let H, S
   if (Xmax === Xmin) {
-    console.log('Xmax == Xmin')
     H = S = 0
   } else {
     switch (Xmax) {
       case R: {
         H = (G - B) / C
-        console.log('Case R: ', H)
+
         break
       }
       case G: {
         H = (B - R) / C + 2
-        console.log('Case G: ', H)
+
         break
       }
       case B: {
         H = (R - G) / C + 4
-        console.log('Case B: ', H)
+
         break
       }
     }
@@ -197,28 +210,12 @@ const darken = (color, percent) => {
   return `hsl(${hsl.H},${hsl.S}%,${hsl.L}%)`
 }
 
-const setMode = (mode) => {
-  pixel.forEach((pixel) => pixel.removeEventListener('click', paintMode))
-  switch (mode) {
-    case 'bw': {
-      paintMode = paintBW
-      break
-    }
-    case 'color': {
-      paintMode = paintColor
-      break
-    }
-    case 'rnd': {
-      paintMode = paintRandom
-      break
-    }
-    case 'darken': {
-      paintMode = paintDarken
-      break
-    }
-  }
-
-  pixel.forEach((pixel) => pixel.addEventListener('click', paintMode))
+const switchPaintMode = (newPaintMode) => {
+  pixel.forEach((pixel) => pixel.removeEventListener('mouseenter', paintMode))
+  pixel.forEach((pixel) => pixel.removeEventListener('mousedown', paintMode))
+  paintMode = newPaintMode
+  pixel.forEach((pixel) => pixel.addEventListener('mouseenter', paintMode))
+  pixel.forEach((pixel) => pixel.addEventListener('mousedown', paintMode))
 }
 
 initialize()

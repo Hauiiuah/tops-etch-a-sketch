@@ -8,15 +8,17 @@
   <title>Etch a Sketch</title>
 </head>
 <body>
+  <h1>Etch-a-Sketch</h1>
   <div class="etch-a">
-
+    
     <div id="paint-grid">
-  
+      
     </div>
     <div id="controls">
+      <label id="gridSizeLabel" for="gridSize">Grid-Size:</label>
+      <input type="range" min="16" max="100" step="1" value="16" id="gridSize" />
       <button id="clearButton">Clear</button>
       <button id="bwColorButton">Black</button>
-      <button id="colorButton">Color</button>
       <button id="rndRgbColorButton">Random RGB</button>
       <button id="darkenButton">Darken</button>
     </div>

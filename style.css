@@ -17,26 +17,26 @@ body {
   flex-direction: column;
   gap: 24px;
 }
-.pixel {
-  border: 1px solid black;
-}
 
-.pixel:hover {
-  background-color: lightgray;
+#paint-grid div div:hover {
+  background-color: orange;
 }
 
 #paint-grid {
   margin-top: 20%;
+  margin-inline: 30px;
   width: 480px;
   height: 480px;
   border: 1px solid black;
   display: flex;
 }
 
-.black {
-  background-color: hsl(119, 100%, 50%);
+.pixel {
+  border: 0px solid black;
 }
-
+.pixel:hover {
+  background-color: aqua;
+}
 #controls button {
   padding: 15px 45px;
 }
